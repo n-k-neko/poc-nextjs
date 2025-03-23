@@ -7,7 +7,7 @@ interface PaginatedPokemonListProps {
   pokemonEntries: PokemonEntry[];
 }
 
-const ITEMS_PER_PAGE = 20;
+const ITEMS_PER_PAGE = 30;
 
 const PaginatedPokemonList = ({ pokemonEntries }: PaginatedPokemonListProps) => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -17,7 +17,7 @@ const PaginatedPokemonList = ({ pokemonEntries }: PaginatedPokemonListProps) => 
   const totalPages = Math.ceil(pokemonEntries.length / ITEMS_PER_PAGE);
 
   const handleNextPage = () => {
-    setCurrentPage((prevPage) => prevPage + 1);
+    setCurrentPage((prevPage) => Math.min(prevPage + 1, totalPages));
   };
 
   const handlePreviousPage = () => {
@@ -37,14 +37,13 @@ const PaginatedPokemonList = ({ pokemonEntries }: PaginatedPokemonListProps) => 
 
     const loadDisplayPokemonData = async (entries: PokemonEntry[]) => {
       const data = await fetchDisplayPokemonData(entries);
-      console.log(data);
       setSelectedPokemonRecords(data);
+      setIsLoaded(false);
     };
 
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
     const entries = pokemonEntries.slice(startIndex, startIndex + ITEMS_PER_PAGE);
     loadDisplayPokemonData(entries);
-    setIsLoaded(false);
   }, [currentPage, pokemonEntries]);
 
   return (
@@ -53,12 +52,12 @@ const PaginatedPokemonList = ({ pokemonEntries }: PaginatedPokemonListProps) => 
         <div>Loading...</div>
       ) : (
         <div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4">
             {selectedPokemonRecords.map((record, index) => (
               <PokemonCard key={index} pokemon={record} />
             ))}
           </div>
-          <div className="flex justify-center mt-4 space-x-4">
+          <div className="flex justify-center mt-4 space-x-4 items-center">
             <button
               onClick={handlePreviousPage}
               disabled={currentPage === 1}
@@ -66,6 +65,9 @@ const PaginatedPokemonList = ({ pokemonEntries }: PaginatedPokemonListProps) => 
             >
               Previous
             </button>
+            <span className="text-lg font-bold">
+              {currentPage} / {totalPages}
+            </span>
             <button
               onClick={handleNextPage}
               disabled={currentPage === totalPages}
