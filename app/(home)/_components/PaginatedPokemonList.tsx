@@ -12,7 +12,7 @@ const ITEMS_PER_PAGE = 20;
 const PaginatedPokemonList = ({ pokemonEntries }: PaginatedPokemonListProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoaded, setIsLoaded] = useState(true);
-  const [selectedPokemonRecords, setSelectedPokemonRecords] = useState<any[]>([]);
+  const [selectedPokemonRecords, setSelectedPokemonRecords] = useState<Pokemon[]>([]);
 
   const totalPages = Math.ceil(pokemonEntries.length / ITEMS_PER_PAGE);
 
@@ -45,7 +45,7 @@ const PaginatedPokemonList = ({ pokemonEntries }: PaginatedPokemonListProps) => 
     const entries = pokemonEntries.slice(startIndex, startIndex + ITEMS_PER_PAGE);
     loadDisplayPokemonData(entries);
     setIsLoaded(false);
-  }, [currentPage]);
+  }, [currentPage, pokemonEntries]);
 
   return (
     <div>
